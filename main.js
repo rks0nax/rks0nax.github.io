@@ -127,16 +127,17 @@ var AppComponent = /** @class */ (function () {
             if (this.filterText) {
                 for (var _i = 0, _a = Object.keys(this.data[this.currentIndex]); _i < _a.length; _i++) {
                     var key = _a[_i];
-                    if (this.data[this.currentIndex][key].toString().toLowerCase().indexOf(this.filterText) !== -1) {
+                    if (this.data[this.currentIndex][key].toString().toLowerCase().indexOf(this.filterText.toLowerCase()) !== -1) {
                         this.scrolledData.push(this.data[this.currentIndex]);
+                        maxIterate--;
                         break;
                     }
                 }
             }
             else {
                 this.scrolledData.push(this.data[this.currentIndex]);
+                maxIterate--;
             }
-            maxIterate--;
             this.currentIndex++;
         }
     };
