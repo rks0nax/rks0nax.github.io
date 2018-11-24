@@ -115,15 +115,12 @@ var AppComponent = /** @class */ (function () {
         this.cities = ['MUMBAI', 'DELHI', 'BANGALORE', 'CHENNAI', 'VARANASI'];
         this.city = 'MUMBAI';
         this.getData();
-        window.addEventListener('scroll', this.pushData.bind(this));
+        window.addEventListener('scroll', this.scrollEvent.bind(this));
     }
     AppComponent.prototype.checkScrolled = function () {
         return window.scrollY - this.scrollHeight > 4000;
     };
     AppComponent.prototype.pushData = function () {
-        if (this.scrollHeight && !this.checkScrolled()) {
-            return;
-        }
         this.scrollHeight = window.scrollY;
         var maxIterate = 100;
         while (maxIterate > 0 && this.currentIndex <= this.data.length) {
@@ -143,6 +140,12 @@ var AppComponent = /** @class */ (function () {
             this.currentIndex++;
         }
     };
+    AppComponent.prototype.scrollEvent = function () {
+        if (!this.checkScrolled()) {
+            return;
+        }
+        this.pushData();
+    };
     AppComponent.prototype.resetData = function () {
         this.scrolledData = [];
         this.currentIndex = 0;
@@ -154,12 +157,11 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         var url = 'https://vast-shore-74260.herokuapp.com/banks?city=' + this.city;
         this.loading = true;
-        this.scrolledData = [];
         this.filterText = '';
         this.http.get(url).subscribe(function (data) {
             _this.loading = false;
             _this.data = data;
-            _this.pushData();
+            _this.resetData();
         }, function (err) {
             console.log(err);
         });
@@ -169,6 +171,7 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.scrollTop = function () {
         window.scrollTo(0, 0);
+        this.scrollHeight = 0;
     };
     AppComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
