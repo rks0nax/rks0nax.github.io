@@ -117,17 +117,33 @@ var AppComponent = /** @class */ (function () {
         this.getData();
         window.addEventListener('scroll', this.scrollEvent.bind(this));
     }
+    /**
+     * Check if user has scrolled more than 6000
+     * @returns boolean
+     */
     AppComponent.prototype.checkScrolled = function () {
-        return window.scrollY - this.scrollHeight > 4000;
+        return window.scrollY - this.scrollHeight > 6000;
     };
+    /**
+     * Run the iteration, filter the data if there is a filter
+     * append maximum of 100 banks at once
+     */
     AppComponent.prototype.pushData = function () {
         this.scrollHeight = window.scrollY;
         var maxIterate = 100;
+        var filterText = this.filterText.toLowerCase();
+        // Iterate till the last bank object or 100 banks at max
         while (maxIterate > 0 && this.currentIndex <= this.data.length) {
+            // If there's filter text
             if (this.filterText) {
-                for (var _i = 0, _a = Object.keys(this.data[this.currentIndex]); _i < _a.length; _i++) {
-                    var key = _a[_i];
-                    if (this.data[this.currentIndex][key].toString().toLowerCase().indexOf(this.filterText.toLowerCase()) !== -1) {
+                var keys = Object.keys(this.data[this.currentIndex]);
+                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                    var key = keys_1[_i];
+                    // If any column matches the filter text, append it to list and break immediately
+                    // and move to next bank object
+                    // Worst case would be the last key in the object being matched by the filter
+                    // Best case, the first key matching the filter
+                    if (this.data[this.currentIndex][key].toString().toLowerCase().indexOf(filterText) !== -1) {
                         this.scrolledData.push(this.data[this.currentIndex]);
                         maxIterate--;
                         break;
@@ -141,12 +157,18 @@ var AppComponent = /** @class */ (function () {
             this.currentIndex++;
         }
     };
+    /**
+     * Append to table if the scroll has crossed certain limit
+     */
     AppComponent.prototype.scrollEvent = function () {
         if (!this.checkScrolled()) {
             return;
         }
         this.pushData();
     };
+    /**
+     * Reset all the data and start pushing again from start
+     */
     AppComponent.prototype.resetData = function () {
         this.scrolledData = [];
         this.currentIndex = 0;
@@ -154,6 +176,9 @@ var AppComponent = /** @class */ (function () {
         window.scrollTo(0, 0);
         this.pushData();
     };
+    /**
+     * Make a request and reset the data after request
+     */
     AppComponent.prototype.getData = function () {
         var _this = this;
         var url = 'https://vast-shore-74260.herokuapp.com/banks?city=' + this.city;
@@ -164,9 +189,13 @@ var AppComponent = /** @class */ (function () {
             _this.data = data;
             _this.resetData();
         }, function (err) {
+            alert('Something went wrong. Check console for error');
             console.log(err);
         });
     };
+    /**
+     * Scroll to top button if scrolled more than certain value
+     */
     AppComponent.prototype.showScroll = function () {
         return window.scrollY > 400;
     };
